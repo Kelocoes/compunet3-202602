@@ -12,7 +12,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
         configService: ConfigService,
         private readonly usersService: UserService,
     ) {
-        const secret = configService.get<string>('JWT_SECRET');
+        const secret = configService.get<string>('JWT_SECRET'); //definir el jwtsecret en el .env
         if (!secret) {
             throw new Error('La variable de entorno JWT_SECRET no está configurada');
         }

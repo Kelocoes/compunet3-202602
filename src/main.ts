@@ -4,15 +4,20 @@ import { NestFactory } from '@nestjs/core';
 import { AppLogger } from './common/logger/logger.service';
 import { AppModule } from './app.module';
 import { CryptoInterceptor } from './common/interceptors/crypto.interceptor';
+import { TraceabilityInterceptor } from './common/interceptors/traceability.interceptor';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule, {
-        bufferLogs: true,
+        bufferLogs: true, //logs de inicio en buffer temporal hasta que applogger este completamente instanciado
     });
 
     const appLogger = app.get(AppLogger);
     app.useLogger(appLogger);
-    app.useGlobalInterceptors(app.get(CryptoInterceptor));
+
+    //registro de interceptores
+    app.useGlobalInterceptors(new CryptoInterceptor());
+    app.useGlobalInterceptors(new TraceabilityInterceptor(appLogger));
+
     const port = process.env.PORT ?? 3000;
     await app.listen(port);
     appLogger.log(`Servidor iniciado exitosamente en el puerto ${port}`);

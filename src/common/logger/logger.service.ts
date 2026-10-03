@@ -21,6 +21,7 @@ export class AppLogger implements LoggerService, OnModuleDestroy {
         this.logStream = fs.createWriteStream(logFile, { flags: 'a' });
     }
 
+    //niveles de log
     log(message: string) {
         this.write('LOG', message);
     }
@@ -39,6 +40,12 @@ export class AppLogger implements LoggerService, OnModuleDestroy {
 
     verbose(message: string) {
         this.write('VERBOSE', message);
+    }
+
+    //registramos log asociado al correlation id (id de peticion, nivel de log, msj a registrar)
+    logWithTrace(correlationId: string, level: string, message: string) {
+        const formattedMessage = `[CorrelationID: ${correlationId}] ${message}`;
+        this.write(level.toUpperCase(), formattedMessage);
     }
 
     private write(level: string, message: string, trace?: string) {
