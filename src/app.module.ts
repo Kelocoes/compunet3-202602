@@ -5,6 +5,8 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
+import { CryptoInterceptor } from './common/interceptors/crypto.interceptor';
+import { TraceabilityInterceptor } from './common/interceptors/traceability.interceptor';
 import { LoggerModule } from './common/logger/logger.module';
 @Module({
     imports: [
@@ -29,6 +31,6 @@ import { LoggerModule } from './common/logger/logger.module';
     ],
 
     controllers: [AppController],
-    providers: [AppService],
+    providers: [AppService, CryptoInterceptor, TraceabilityInterceptor],
 })
 export class AppModule {}

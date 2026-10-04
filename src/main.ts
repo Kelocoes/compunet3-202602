@@ -2,6 +2,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 
 import { CryptoInterceptor } from './common/interceptors/crypto.interceptor';
+import { TraceabilityInterceptor } from './common/interceptors/traceability.interceptor';
 import { AppModule } from './app.module';
 import { AppLogger } from './common/logger/logger.service';
 
@@ -21,7 +22,7 @@ async function bootstrap() {
         }),
     );
 
-    app.useGlobalInterceptors(new CryptoInterceptor());
+    app.useGlobalInterceptors(app.get(TraceabilityInterceptor), app.get(CryptoInterceptor));
 
     const port = process.env.PORT ?? 3000;
 

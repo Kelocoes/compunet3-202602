@@ -112,3 +112,12 @@ erDiagram
 ```
 
 </details>
+
+Estudiante: Maria Cristina Angulo
+Código: A00404027
+
+## Demostración y validación
+
+![alt text](image.png)
+
+![alt text](image-1.png)

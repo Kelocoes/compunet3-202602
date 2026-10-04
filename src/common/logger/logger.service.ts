@@ -1,7 +1,10 @@
+import { AsyncLocalStorage } from 'async_hooks';
 import * as fs from 'fs';
 import * as path from 'path';
 
 import { Injectable, LoggerService, OnModuleDestroy } from '@nestjs/common';
+
+export const correlationStorage = new AsyncLocalStorage<string>();
 
 @Injectable()
 export class AppLogger implements LoggerService, OnModuleDestroy {
@@ -43,7 +46,9 @@ export class AppLogger implements LoggerService, OnModuleDestroy {
 
     private write(level: string, message: string, trace?: string) {
         const timestamp = new Date().toISOString();
-        const formattedLog = `[${timestamp}] [${level}] ${message}${trace ? '\n[Stack Trace]: ' + trace : ''}\n`;
+        const correlationId = correlationStorage.getStore();
+        const traceTag = correlationId ? ` [CorrelationID: ${correlationId}]` : '';
+        const formattedLog = `[${timestamp}] [${level}]${traceTag} ${message}${trace ? '\n[Stack Trace]: ' + trace : ''}\n`;
 
         // Escritura persistente en disco
         this.logStream.write(formattedLog);
