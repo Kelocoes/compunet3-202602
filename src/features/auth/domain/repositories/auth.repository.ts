@@ -1,3 +1,4 @@
+import { AuthTokens } from '../entities/auth-tokens';
 import { User } from '../entities/user';
 
 export interface LoginParams {
@@ -12,7 +13,7 @@ export interface RegisterParams {
 }
 
 export interface AuthRepository {
-    login(params: LoginParams): Promise<User | null>;
+    login(params: LoginParams): Promise<AuthTokens | null>;
 
     register(params: RegisterParams): Promise<User>;
 }

@@ -9,6 +9,10 @@ export interface LoginDto {
     password: string;
 }
 
+export interface LoginResponseDto {
+    access_token: string;
+}
+
 export interface RegisterDto {
     full_name: string;
     email: string;
