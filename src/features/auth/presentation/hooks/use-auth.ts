@@ -2,9 +2,9 @@
 
 import { useCallback } from 'react';
 import { useAppDispatch, useAppSelector } from '@/src/store/hooks';
-import { clearError, loginMutation, logout as logoutAction, registerMutation } from '../store/auth.slice';
-import { LoginParams } from '../../domain/repositories/auth.repository';
-import { RegisterInput } from '../../domain/usecases/register.usecase';
+import { clearError, loginMutation, logoutMutation, registerMutation } from '../store/auth.slice';
+import type { LoginParams } from '../../domain/repositories/auth.repository';
+import type { RegisterInput } from '../../domain/usecases/register.usecase';
 
 export function useAuth() {
     const dispatch = useAppDispatch();
@@ -23,13 +23,18 @@ export function useAuth() {
         return registerMutation.fulfilled.match(resultAction);
     };
 
-    const logout = useCallback(() => {
-        dispatch(logoutAction());
-    }, [dispatch]);
+    const logout = async (): Promise<void> => {
+        await dispatch(logoutMutation());
+    };
 
     const resetError = useCallback(() => {
         dispatch(clearError());
     }, [dispatch]);
+
+    const hasRole = (role: string): boolean => user?.role === role;
+
+    const hasPermission = (permission: string): boolean =>
+        !!user?.permissions.includes(permission);
 
     return {
         user,
@@ -40,5 +45,7 @@ export function useAuth() {
         register,
         logout,
         resetError,
+        hasRole,
+        hasPermission,
     };
 }

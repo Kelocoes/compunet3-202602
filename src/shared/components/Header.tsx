@@ -1,12 +1,18 @@
 'use client';
 
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/src/features/auth/presentation/hooks/use-auth';
 import { NavLink } from './NavLink';
 import { NAV_ITEMS } from './nav-items';
 
 export function Header() {
+    const router = useRouter();
     const { user, logout } = useAuth();
+
+    const handleLogout = async () => {
+        await logout();
+        router.replace('/login');
+    };
 
     return (
         <header className="navbar bg-base-100 shadow-sm px-4">
@@ -63,7 +69,7 @@ export function Header() {
                     className="menu dropdown-content bg-base-100 rounded-box z-10 mt-3 w-44 p-2 shadow"
                 >
                     <li><a>Mi perfil</a></li>
-                    <li><Link href="/login" onClick={logout}>Cerrar sesión</Link></li>
+                    <li><button type="button" onClick={handleLogout}>Cerrar sesión</button></li>
                 </ul>
             </div>
         </header>
