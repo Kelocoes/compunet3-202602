@@ -1,8 +1,13 @@
+'use client';
+
 import Link from 'next/link';
+import { useAuth } from '@/src/features/auth/presentation/hooks/use-auth';
 import { NavLink } from './NavLink';
 import { NAV_ITEMS } from './nav-items';
 
 export function Header() {
+    const { user, logout } = useAuth();
+
     return (
         <header className="navbar bg-base-100 shadow-sm px-4">
             <div className="flex-1 flex items-center gap-2">
@@ -50,7 +55,7 @@ export function Header() {
                     aria-label="Menú de usuario"
                 >
                     <div className="bg-primary text-primary-content w-9 rounded-full">
-                        <span>AP</span>
+                        <span>{user?.initials ?? '?'}</span>
                     </div>
                 </div>
                 <ul
@@ -58,7 +63,7 @@ export function Header() {
                     className="menu dropdown-content bg-base-100 rounded-box z-10 mt-3 w-44 p-2 shadow"
                 >
                     <li><a>Mi perfil</a></li>
-                    <li><Link href="/login">Cerrar sesión</Link></li>
+                    <li><Link href="/login" onClick={logout}>Cerrar sesión</Link></li>
                 </ul>
             </div>
         </header>

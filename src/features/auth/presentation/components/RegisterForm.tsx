@@ -1,39 +1,37 @@
 'use client';
 
-import { useState, type SyntheticEvent } from 'react';
+import { useEffect, useState, type SyntheticEvent } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '../hooks/use-auth';
 
 export function RegisterForm() {
     const router = useRouter();
+    const { register, isLoading, errorMessage, resetError } = useAuth();
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [submitted, setSubmitted] = useState(false);
 
+    useEffect(() => {
+        resetError();
+    }, [resetError]);
+
     const nameInvalid = submitted && name.trim() === '';
     const emailInvalid = submitted && email.trim() === '';
     const passwordInvalid = submitted && password === '';
-    const mismatch = submitted && password !== confirmPassword;
-    const confirmInvalid = submitted && (confirmPassword === '' || mismatch);
-    const hasEmptyField = nameInvalid || emailInvalid || passwordInvalid || confirmPassword === '';
+    const confirmInvalid = submitted && (confirmPassword === '' || password !== confirmPassword);
 
-    const handleSubmit = (e: SyntheticEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: SyntheticEvent<HTMLFormElement>) => {
         e.preventDefault();
         setSubmitted(true);
 
-        const isValid =
-            name.trim() !== '' &&
-            email.trim() !== '' &&
-            password !== '' &&
-            password === confirmPassword;
+        const success = await register({ name, email, password, confirmPassword });
 
-        if (!isValid) {
-            return;
+        if (success) {
+            router.push('/login');
         }
-
-        router.push('/login');
     };
 
     return (
@@ -47,6 +45,7 @@ export function RegisterForm() {
                         type="text"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
+                        disabled={isLoading}
                         placeholder="Ana Pérez"
                         autoComplete="name"
                         className={`input w-full ${nameInvalid ? 'input-error' : ''}`}
@@ -57,6 +56,7 @@ export function RegisterForm() {
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
+                        disabled={isLoading}
                         placeholder="ana@correo.com"
                         autoComplete="email"
                         className={`input w-full ${emailInvalid ? 'input-error' : ''}`}
@@ -67,6 +67,7 @@ export function RegisterForm() {
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
+                        disabled={isLoading}
                         placeholder="********"
                         autoComplete="new-password"
                         className={`input w-full ${passwordInvalid ? 'input-error' : ''}`}
@@ -77,24 +78,21 @@ export function RegisterForm() {
                         type="password"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
+                        disabled={isLoading}
                         placeholder="********"
                         autoComplete="new-password"
                         className={`input w-full ${confirmInvalid ? 'input-error' : ''}`}
                     />
 
-                    {submitted && hasEmptyField && (
+                    {errorMessage && (
                         <p role="alert" className="label text-error">
-                            Completa todos los campos.
-                        </p>
-                    )}
-                    {mismatch && !hasEmptyField && (
-                        <p role="alert" className="label text-error">
-                            Las contraseñas no coinciden.
+                            {errorMessage}
                         </p>
                     )}
                 </fieldset>
 
-                <button type="submit" className="btn btn-primary w-full mt-2">
+                <button type="submit" disabled={isLoading} className="btn btn-primary w-full mt-2">
+                    {isLoading ? <span className="loading loading-spinner loading-sm"></span> : null}
                     Crear cuenta
                 </button>
 

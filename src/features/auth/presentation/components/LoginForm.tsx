@@ -1,28 +1,33 @@
 'use client';
 
-import { useState, type SyntheticEvent } from 'react';
+import { useEffect, useState, type SyntheticEvent } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '../hooks/use-auth';
 
 export function LoginForm() {
     const router = useRouter();
+    const { login, isLoading, errorMessage, resetError } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [submitted, setSubmitted] = useState(false);
 
-    const emailInvalid = submitted && email.trim() === '';
-    const passwordInvalid = submitted && password.trim() === '';
-    const hasError = emailInvalid || passwordInvalid;
+    useEffect(() => {
+        resetError();
+    }, [resetError]);
 
-    const handleSubmit = (e: SyntheticEvent<HTMLFormElement>) => {
+    const emailInvalid = submitted && email.trim() === '';
+    const passwordInvalid = submitted && password === '';
+
+    const handleSubmit = async (e: SyntheticEvent<HTMLFormElement>) => {
         e.preventDefault();
         setSubmitted(true);
 
-        if (email.trim() === '' || password.trim() === '') {
-            return;
-        }
+        const success = await login({ email, password });
 
-        router.replace('/routines');
+        if (success) {
+            router.replace('/routines');
+        }
     };
 
     return (
@@ -39,6 +44,7 @@ export function LoginForm() {
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
+                        disabled={isLoading}
                         placeholder="tu@correo.com"
                         autoComplete="email"
                         className={`input w-full ${emailInvalid ? 'input-error' : ''}`}
@@ -49,19 +55,21 @@ export function LoginForm() {
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
+                        disabled={isLoading}
                         placeholder="********"
                         autoComplete="current-password"
                         className={`input w-full ${passwordInvalid ? 'input-error' : ''}`}
                     />
 
-                    {hasError && (
+                    {errorMessage && (
                         <p role="alert" className="label text-error">
-                            Completa el correo y la contraseña.
+                            {errorMessage}
                         </p>
                     )}
                 </fieldset>
 
-                <button type="submit" className="btn btn-primary w-full mt-2">
+                <button type="submit" disabled={isLoading} className="btn btn-primary w-full mt-2">
+                    {isLoading ? <span className="loading loading-spinner loading-sm"></span> : null}
                     Iniciar sesión
                 </button>
 
