@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { routineContainer } from '../../di/routine.container';
+import { createRoutineAction, getRoutinesAction } from '../actions/routines.actions';
 import { CreateRoutineParams } from '../../domain/repositories/routine.repository';
-import { RoutineItemViewModel, RoutineViewModelMapper } from '../viewmodels/routine.viewmodel';
+import { RoutineItemViewModel } from '../viewmodels/routine.viewmodel';
 
 interface RoutinesState {
     items: RoutineItemViewModel[];
@@ -19,34 +19,42 @@ const initialState: RoutinesState = {
 
 /**
  * 1. Thunk de Consulta / Lectura (Query)
- * Invoca el caso de uso GetRoutinesUseCase y mapea las entidades de dominio a ViewModels.
+ * Invoca la Server Action getRoutinesAction, que exige el permiso view_routines en el servidor.
  */
 export const fetchRoutines = createAsyncThunk(
     'routines/fetchAll',
     async (_, { rejectWithValue }) => {
         try {
-            const domainEntities = await routineContainer.getRoutines.execute();
-            return domainEntities.map((entity) => RoutineViewModelMapper.toViewModel(entity));
-        } catch (err: unknown) {
-            const message = err instanceof Error ? err.message : 'Error al cargar rutinas';
-            return rejectWithValue(message);
+            const result = await getRoutinesAction();
+
+            if (!result.ok) {
+                return rejectWithValue(result.message);
+            }
+
+            return result.routines;
+        } catch {
+            return rejectWithValue('No se pudieron cargar las rutinas. Intenta de nuevo.');
         }
     }
 );
 
 /**
  * 2. Thunk de Mutación (Mutation)
- * Invoca el caso de uso CreateRoutineUseCase para guardar una nueva rutina y retorna el nuevo ViewModel.
+ * Invoca la Server Action createRoutineAction, que exige el permiso create_routines en el servidor.
  */
 export const createRoutineMutation = createAsyncThunk(
     'routines/create',
     async (params: CreateRoutineParams, { rejectWithValue }) => {
         try {
-            const newEntity = await routineContainer.createRoutine.execute(params);
-            return RoutineViewModelMapper.toViewModel(newEntity);
-        } catch (err: unknown) {
-            const message = err instanceof Error ? err.message : 'No se pudo crear la rutina';
-            return rejectWithValue(message);
+            const result = await createRoutineAction(params);
+
+            if (!result.ok) {
+                return rejectWithValue(result.message);
+            }
+
+            return result.routine;
+        } catch {
+            return rejectWithValue('No se pudo crear la rutina. Intenta de nuevo.');
         }
     }
 );

@@ -7,7 +7,8 @@ const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const MOCK_SECRET = 'secreto-de-prueba';
 const TOKEN_TTL_SECONDS = 60 * 60;
-const DEFAULT_PERMISSIONS = ['view_routines', 'create_routines'];
+const USER_PERMISSIONS = ['view_routines'];
+const ADMIN_PERMISSIONS = ['view_routines', 'create_routines'];
 
 interface StoredUser extends UserResponseDto {
     password: string;
@@ -31,7 +32,7 @@ export class AuthMockDatasource implements AuthDatasource {
             email: 'ana@icesi.edu.co',
             password: '123456',
             role: 'USER',
-            permissions: [...DEFAULT_PERMISSIONS],
+            permissions: [...USER_PERMISSIONS],
         },
         {
             id: 2,
@@ -39,7 +40,7 @@ export class AuthMockDatasource implements AuthDatasource {
             email: 'admin@icesi.edu.co',
             password: 'admin123',
             role: 'ADMIN',
-            permissions: [...DEFAULT_PERMISSIONS],
+            permissions: [...ADMIN_PERMISSIONS],
         },
     ];
 
@@ -82,7 +83,7 @@ export class AuthMockDatasource implements AuthDatasource {
             email: dto.email,
             password: dto.password,
             role: 'USER',
-            permissions: [...DEFAULT_PERMISSIONS],
+            permissions: [...USER_PERMISSIONS],
         };
 
         this.users.push(created);

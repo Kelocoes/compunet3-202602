@@ -1,3 +1,4 @@
+import 'server-only';
 import { RoutineMockDatasource } from '../infrastructure/datasources/routine-mock-datasource';
 import { RoutineRepositoryImpl } from '../infrastructure/repositories/routine.repository.impl';
 import { GetRoutinesUseCase } from '../domain/usecases/get-routines.usecase';
