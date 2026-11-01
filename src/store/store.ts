@@ -1,5 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { routinesReducer } from '@/src/features/routines/presentation/store/routines.slice';
+import { authReducer } from '@/src/features/auth/presentation/store/auth.slice';
 
 /**
  * Fábrica para crear una nueva instancia del Store de Redux.
@@ -13,6 +14,7 @@ export const makeStore = () => {
     return configureStore({
         reducer: {
             routines: routinesReducer,
+            auth: authReducer,
         },
     });
 };
