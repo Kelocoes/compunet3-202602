@@ -2,7 +2,7 @@
 
 import { useCallback } from 'react';
 import { useAppDispatch, useAppSelector } from '@/src/store/hooks';
-import { clearError, loginMutation, logout as logoutAction, registerMutation } from '../store/auth.slice';
+import { clearError, loginMutation, logoutMutation, registerMutation } from '../store/auth.slice';
 import { LoginParams } from '../../domain/repositories/auth.repository';
 import { RegisterInput } from '../../domain/usecases/register.usecase';
 
@@ -24,7 +24,7 @@ export function useAuth() {
     };
 
     const logout = useCallback(() => {
-        dispatch(logoutAction());
+        dispatch(logoutMutation());
     }, [dispatch]);
 
     const resetError = useCallback(() => {

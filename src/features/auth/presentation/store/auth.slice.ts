@@ -1,8 +1,8 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { authContainer } from '../../di/auth.container';
 import { LoginParams } from '../../domain/repositories/auth.repository';
 import { RegisterInput } from '../../domain/usecases/register.usecase';
 import { AuthUserViewModel, AuthViewModelMapper } from '../viewmodels/auth.viewmodel';
+import { loginAction, logoutAction, registerAction } from '../actions/auth.action';
 
 interface AuthState {
     user: AuthUserViewModel | null;
@@ -20,8 +20,9 @@ export const loginMutation = createAsyncThunk(
     'auth/login',
     async (params: LoginParams, { rejectWithValue }) => {
         try {
-            const user = await authContainer.login.execute(params);
-            return AuthViewModelMapper.toViewModel(user);
+            const result = await loginAction(params.email, params.password);
+            if (!result.ok) return rejectWithValue(result.message);
+            return AuthViewModelMapper.toViewModel(result.user);
         } catch (err: unknown) {
             const message = err instanceof Error ? err.message : 'No se pudo iniciar sesión';
             return rejectWithValue(message);
@@ -33,8 +34,8 @@ export const registerMutation = createAsyncThunk(
     'auth/register',
     async (input: RegisterInput, { rejectWithValue }) => {
         try {
-            const user = await authContainer.register.execute(input);
-            return AuthViewModelMapper.toViewModel(user);
+            const result = await registerAction(input);
+            if (!result.ok) return rejectWithValue(result.message);
         } catch (err: unknown) {
             const message = err instanceof Error ? err.message : 'No se pudo crear la cuenta';
             return rejectWithValue(message);
@@ -42,13 +43,16 @@ export const registerMutation = createAsyncThunk(
     }
 );
 
+export const logoutMutation = createAsyncThunk('auth/logout', async () => {
+    await logoutAction();
+});
+
 export const authSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
-        logout: (state) => {
-            state.user = null;
-            state.errorMessage = null;
+        setUser: (state, action: PayloadAction<AuthUserViewModel | null>) => {
+            state.user = action.payload;
         },
         clearError: (state) => {
             state.errorMessage = null;
@@ -81,8 +85,13 @@ export const authSlice = createSlice({
                 state.isLoading = false;
                 state.errorMessage = (action.payload as string) ?? 'No se pudo crear la cuenta';
             });
+        
+        builder.addCase(logoutMutation.fulfilled, (state) => {
+            state.user = null;
+            state.errorMessage = null;
+        });
     },
 });
 
-export const { logout, clearError } = authSlice.actions;
+export const { setUser, clearError } = authSlice.actions;
 export const authReducer = authSlice.reducer;

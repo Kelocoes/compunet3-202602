@@ -1,3 +1,5 @@
+import "server-only";
+
 import { AuthMockDatasource } from '../infrastructure/datasources/auth-mock-datasource';
 import { AuthRepositoryImpl } from '../infrastructure/repositories/auth.repository.impl';
 import { LoginUseCase } from '../domain/usecases/login.usecase';

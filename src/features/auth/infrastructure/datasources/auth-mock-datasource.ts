@@ -1,3 +1,5 @@
+import "server-only";
+
 import { createHmac } from 'node:crypto';
 import { AuthDatasource } from './auth-datasource.interface';
 import { LoginDto, LoginResponseDto, RegisterDto, UserResponseDto } from '../dtos/auth.dto';

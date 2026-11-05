@@ -1,18 +1,20 @@
-import { User } from '../../domain/entities/user';
+import type { AuthUser } from '../actions/auth.action';
 
 export interface AuthUserViewModel {
-    readonly id: number;
+    readonly id: string;
     readonly displayName: string;
-    readonly email: string;
+    readonly role: string;
+    readonly permissions: string[];
     readonly initials: string;
 }
 
 export class AuthViewModelMapper {
-    static toViewModel(entity: User): AuthUserViewModel {
+    static toViewModel(entity: AuthUser): AuthUserViewModel {
         return {
             id: entity.id,
             displayName: entity.name,
-            email: entity.email,
+            role: entity.role,
+            permissions: entity.permissions,
             initials: AuthViewModelMapper.buildInitials(entity.name),
         };
     }
