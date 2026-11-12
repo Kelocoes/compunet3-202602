@@ -1,5 +1,6 @@
 # GymRoutines: protección de rutas y permisos
 
+
 Guía paso a paso para proteger la aplicación de rutinas (Next.js 16, Redux Toolkit y Clean Architecture) con tres capas: `proxy.ts`, el DAL y las Server Actions. Al terminar, solo se puede ver `/routines` con sesión y permiso, `/login` y `/register` redirigen si ya hay sesión, y crear una rutina exige el permiso `create_routines` también en el servidor.
 
 - **Punto de partida:** rama `week-14/next-auth-end`, que ya tiene la sesión con JWT en una cookie `httpOnly`.
